@@ -1,0 +1,19 @@
+##############################
+
+just war
+
+#############################
+
+
+- just a simple pygame game
+
+
+- requirements:
+
+	- python
+	- pygame
+
+
+- run:
+
+	- python just_war.py
