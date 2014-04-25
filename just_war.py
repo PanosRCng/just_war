@@ -11,12 +11,11 @@ class Warrior(object):
 		self.width = self.shape.get_width()
 		self.height = self.shape.get_height()
 		self.rect = pygame.Rect(coord,(self.width, self.height))
+		
 		self.min_coord = min_coord
 		self.max_coord = (max_coord[0]-self.width, max_coord[1]-self.height)
-		self.midheight = self.height / 2
-		self.firecolor = (255,0,0)
+		self.midheight = self.height/2
 		self.firespeed = 800
-		self.shotlength = 10
 
 	def Show(self, surface):
 		surface.blit(self.shape, (self.rect[0], self.rect[1]))
@@ -34,7 +33,7 @@ class Warrior(object):
 				self.rect[i] = self.max_coord[i]
 
 	def Fire(self):
-		shot = Fire((self.rect[0], self.rect[1]+self.midheight), self.firecolor, self.shotlength, self.firespeed)
+		shot = Fire("fire_red.png", (self.rect[0]+self.width, self.rect[1]+self.midheight), self.firespeed)
 		return shot
 
 
@@ -45,12 +44,9 @@ class WarriorGhost(Warrior):
 class EnemyGhost(Warrior):
 	def __init__(self, imagefile, coord, min_coord, max_coord, speed_x, speed_y):
 		super(EnemyGhost, self).__init__(imagefile, coord, min_coord, max_coord)
-
 		self.speed_x = speed_x
 		self.speed_y = speed_y
-		
 		self.firespeed = -800
-		self.firecolor = (0,0,255)
 		
 	def Move(self, time):
 		super(EnemyGhost, self).Move(self.speed_x, self.speed_y, time)
@@ -61,33 +57,34 @@ class EnemyGhost(Warrior):
 			self.speed_y = -self.speed_y
 
 	def Fire(self):
-		shot = Fire((self.rect[0], self.rect[1]+self.midheight), self.firecolor, self.shotlength, self.firespeed)
+		shot = Fire("fire_blue.png", (self.rect[0], self.rect[1]+self.midheight), self.firespeed)
 		return shot
 
 
 class Fire:
-	def __init__(self, coord, color, size, speed):
-		self.x1 = coord[0]
-		self.y1 = coord[1]
-		self.size = size
-		self.color = color
+	def __init__(self, imagefile, coord, speed):
+
+		self.shape = pygame.image.load(imagefile)
+		self.width = self.shape.get_width()
+		self.height = self.shape.get_height()
+		self.rect = pygame.Rect(coord,(self.width, self.height))
 		self.speed = speed
 
 	def Show(self, surface):
-		pygame.draw.line(surface, self.color, (self.x1,self.y1), (self.x1-self.size,self.y1),2)
+		surface.blit(self.shape, (self.rect[0], self.rect[1]))
 
 	def Move(self, time):
-		distance = self.speed * time
-		self.x1 += distance	
+		distance = self.speed * time	
+		self.rect.move_ip(distance, 0)
 
-	def GoneAbove(self,x):
-		if self.x1 <= x:
+	def GoneOut(self,x):
+		if self.rect[0] >= x:
 			return True
 		else:
 			return False
 
 	def GetXY(self):
-		return (self.x1, self.y1)
+		return (self.rect[0], self.rect[1])
 
 class Background(object):
 	def __init__(self, imagefile, coord):
@@ -103,23 +100,24 @@ class Background(object):
 def main():
 	pygame.init()
 
-	NUMBER_OF_ENEMIES = 2
-
+	# game parameters
+	gameName = "Just War"
+	NUMBER_OF_ENEMIES = 1
 	screenWidth,screenHeight = (800,500)
+	framerate = 60
 
 	screen = pygame.display.set_mode( (screenWidth,screenHeight), DOUBLEBUF, 32)
-	pygame.display.set_caption("Just War")
+	pygame.display.set_caption(gameName)
 	pygame.key.set_repeat(1,1)
 
 	Field = Background("field.jpg", (0,0))
 
-	warriorGhost1_pos = (100,250)
+	warriorGhost1_pos = (screenWidth/4,screenHeight/2)
 	warrior_low = (0,0)
 	warrior_high = (screenWidth, screenHeight)
 	WarriorGhost1 = WarriorGhost("warrior1.png", warriorGhost1_pos, warrior_low, warrior_high)
 
 	clock = pygame.time.Clock()
-	framerate = 60
 
 	firelist = []
 
@@ -169,7 +167,8 @@ def main():
 				if key[K_DOWN]:
 					warriorGhostSpeed_y = +300
 				if key[K_SPACE]:
-					firelist.append( WarriorGhost1.Fire() )
+					if len(firelist) < 1:
+						firelist.append( WarriorGhost1.Fire() )
 
 
 		# move
@@ -197,7 +196,7 @@ def main():
 			shot.Move(time)
 			shot.Show(screen)
 
-			if shot.GoneAbove(0):
+			if shot.GoneOut(screenWidth):
 				firelist.remove(shot)
 			else:
 				for enemy in enemies:
@@ -209,7 +208,7 @@ def main():
 			shot.Move(time)
 			shot.Show(screen)
 
-			if shot.GoneAbove(0):
+			if shot.GoneOut(screenWidth):
 				enemyFirelist.remove(shot)
 			else:
 				if WarriorGhost1.rect.collidepoint(shot.GetXY()):
