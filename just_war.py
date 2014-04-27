@@ -2,22 +2,40 @@ import pygame
 from pygame.locals import *
 from sys import exit
 from random import randint
+from math import copysign
 
 # classes
 
 class Warrior(object):
 	def __init__ (self, imagefile, coord, min_coord, max_coord):
-		self.shape = pygame.image.load(imagefile)
+		self.shape = pygame.image.load(imagefile+".png")
 		self.width = self.shape.get_width()
 		self.height = self.shape.get_height()
 		self.rect = pygame.Rect(coord,(self.width, self.height))
-		
+
 		self.min_coord = min_coord
 		self.max_coord = (max_coord[0]-self.width, max_coord[1]-self.height)
 		self.midheight = self.height/2
+
 		self.firespeed = 800
 
+		self.imagefile = imagefile
+
+		self.speed_x = 0
+		self.x = 0
+		self.y = 0
+
 	def Show(self, surface):
+
+		if self.speed_x < 0:
+			self.shape = pygame.image.load(self.imagefile+"_neg.png")
+		elif self.speed_x > 0:
+			self.shape = pygame.image.load(self.imagefile+".png")
+			
+		self.width = self.shape.get_width()
+		self.height = self.shape.get_height()
+		self.rect = pygame.Rect((self.x,self.y),(self.width, self.height))
+
 		surface.blit(self.shape, (self.rect[0], self.rect[1]))
 
 	def Move(self, speed_x, speed_y, time):
@@ -26,14 +44,23 @@ class Warrior(object):
 
 		self.rect.move_ip(distance_x, distance_y)
 
+		self.speed_x = speed_x
+
+		# update fire direction
+		if self.speed_x != 0:
+			self.firespeed = (copysign(1,self.speed_x)) * abs(self.firespeed)
+
 		for i in (0,1):
 			if self.rect[i] < self.min_coord[i]:
 				self.rect[i] = self.min_coord[i]
 			if self.rect[i] > self.max_coord[i]:
 				self.rect[i] = self.max_coord[i]
 
+		self.x = self.rect[0]
+		self.y = self.rect[1]
+
 	def Fire(self):
-		shot = Fire("fire_red.png", (self.rect[0]+self.width, self.rect[1]+self.midheight), self.firespeed)
+		shot = Fire("fire_red", (self.rect[0], self.rect[1]+self.midheight), self.firespeed)
 		return shot
 
 
@@ -46,29 +73,36 @@ class EnemyGhost(Warrior):
 		super(EnemyGhost, self).__init__(imagefile, coord, min_coord, max_coord)
 		self.speed_x = speed_x
 		self.speed_y = speed_y
-		self.firespeed = -800
+		self.firespeed = 800
 		
 	def Move(self, time):
 		super(EnemyGhost, self).Move(self.speed_x, self.speed_y, time)
 
+		# bouncing at walls
 		if self.rect[0] >= self.max_coord[0] or self.rect[0] <= self.min_coord[0]:
 			self.speed_x = -self.speed_x
 		if self.rect[1] >= self.max_coord[1] or self.rect[1] <= self.min_coord[1]:
 			self.speed_y = -self.speed_y
 
 	def Fire(self):
-		shot = Fire("fire_blue.png", (self.rect[0], self.rect[1]+self.midheight), self.firespeed)
+		shot = Fire("fire_blue", (self.rect[0], self.rect[1]+self.midheight), self.firespeed)
 		return shot
 
 
 class Fire:
 	def __init__(self, imagefile, coord, speed):
 
+		self.speed = speed
+
+		if self.speed < 0:
+			imagefile = imagefile + "_neg.png"
+		elif self.speed > 0:
+			imagefile = imagefile + ".png"
+
 		self.shape = pygame.image.load(imagefile)
 		self.width = self.shape.get_width()
 		self.height = self.shape.get_height()
 		self.rect = pygame.Rect(coord,(self.width, self.height))
-		self.speed = speed
 
 	def Show(self, surface):
 		surface.blit(self.shape, (self.rect[0], self.rect[1]))
@@ -79,6 +113,8 @@ class Fire:
 
 	def GoneOut(self,x):
 		if self.rect[0] >= x:
+			return True
+		elif self.rect[0] <= 0:
 			return True
 		else:
 			return False
@@ -102,7 +138,7 @@ def main():
 
 	# game parameters
 	gameName = "Just War"
-	NUMBER_OF_ENEMIES = 1
+	NUMBER_OF_ENEMIES = 5
 	screenWidth,screenHeight = (800,500)
 	framerate = 60
 
@@ -115,7 +151,7 @@ def main():
 	warriorGhost1_pos = (screenWidth/4,screenHeight/2)
 	warrior_low = (0,0)
 	warrior_high = (screenWidth, screenHeight)
-	WarriorGhost1 = WarriorGhost("warrior1.png", warriorGhost1_pos, warrior_low, warrior_high)
+	WarriorGhost1 = WarriorGhost("warrior1", warriorGhost1_pos, warrior_low, warrior_high)
 
 	clock = pygame.time.Clock()
 
@@ -133,7 +169,7 @@ def main():
 		
 		if not enemies:
 			for i in range(0, NUMBER_OF_ENEMIES):
-				enemies.append( EnemyGhost("warrior2.png", [randint(screenWidth-100,screenWidth), 
+				enemies.append( EnemyGhost("warrior2", [randint(screenWidth-100,screenWidth), 
 									randint(0,screenHeight)],
 									warrior_low,
 									warrior_high,
