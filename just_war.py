@@ -78,10 +78,10 @@ class EnemyGhost(Warrior):
 	def Move(self, time):
 		super(EnemyGhost, self).Move(self.speed_x, self.speed_y, time)
 
-		# bouncing at walls
-		if self.rect[0] >= self.max_coord[0] or self.rect[0] <= self.min_coord[0]:
+		# change direction randomly and bouncing at walls
+		if ( (self.rect[0] >= self.max_coord[0] or self.rect[0] <= self.min_coord[0]) or (randint(0,200) == 9) ):
 			self.speed_x = -self.speed_x
-		if self.rect[1] >= self.max_coord[1] or self.rect[1] <= self.min_coord[1]:
+		if ( (self.rect[1] >= self.max_coord[1] or self.rect[1] <= self.min_coord[1]) or (randint(0,200) == 10) ):
 			self.speed_y = -self.speed_y
 
 	def Fire(self):
@@ -93,6 +93,8 @@ class Fire:
 	def __init__(self, imagefile, coord, speed):
 
 		self.speed = speed
+		self.imagefile = imagefile
+		self.boomCounter = 0
 
 		if self.speed < 0:
 			imagefile = imagefile + "_neg.png"
@@ -108,6 +110,10 @@ class Fire:
 		surface.blit(self.shape, (self.rect[0], self.rect[1]))
 
 	def Move(self, time):
+
+		if self.boomCounter > 0:
+			self.boomCounter = self.boomCounter + 1
+
 		distance = self.speed * time	
 		self.rect.move_ip(distance, 0)
 
@@ -116,11 +122,26 @@ class Fire:
 			return True
 		elif self.rect[0] <= 0:
 			return True
+		elif self.boomCounter > 3:
+			return True
 		else:
 			return False
 
 	def GetXY(self):
 		return (self.rect[0], self.rect[1])
+
+	def Boom(self):
+
+		self.boomCounter = 1
+		self.speed = (copysign(1,self.speed)) * 500
+
+		imagefile = self.imagefile + "_boom.png"
+
+		self.shape = pygame.image.load(imagefile)
+		self.width = self.shape.get_width()
+		self.height = self.shape.get_height()
+		self.rect = pygame.Rect(self.GetXY(),(self.width, self.height))
+
 
 class Background(object):
 	def __init__(self, imagefile, coord):
@@ -237,7 +258,7 @@ def main():
 			else:
 				for enemy in enemies:
 					if enemy.rect.collidepoint(shot.GetXY()):
-						firelist.remove(shot)
+						shot.Boom()
 						enemies.remove(enemy)
 
 		for shot in enemyFirelist:
@@ -248,8 +269,8 @@ def main():
 				enemyFirelist.remove(shot)
 			else:
 				if WarriorGhost1.rect.collidepoint(shot.GetXY()):
-					enemyFirelist.remove(shot)
-					exit()
+					shot.Boom()
+					#exit()
 
 		pygame.display.update()
 
