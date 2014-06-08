@@ -26,18 +26,33 @@ class Warrior(GameElement):
 		self.x = 0
 		self.y = 0
 
+		self.shieldForce = 0
+
+
 	def Show(self, surface):
 
-		if self.speed_x < 0:
-			self.shape = self.load_image(self.imagefile+"_neg.png")
-		elif self.speed_x > 0:
-			self.shape = self.load_image(self.imagefile+".png")
+		imagefile = self.imagefile
+
+		if self.shieldForce > 0:
+			imagefile = imagefile + "_shield"
+
+		if self.firespeed < 0:
+			imagefile = imagefile + "_neg"
+		elif self.firespeed > 0:
+			imagefile = imagefile
 			
+		imagefile = imagefile + ".png"
+
+		self.shape = self.load_image(imagefile)
 		self.width = self.shape.get_width()
 		self.height = self.shape.get_height()
 		self.rect = pygame.Rect((self.x,self.y),(self.width, self.height))
 
 		surface.blit(self.shape, (self.rect[0], self.rect[1]))
+
+		if self.shieldForce > 0:
+			self.shieldForce = self.shieldForce - 10
+
 
 	def Move(self, speed_x, speed_y, time):
 		distance_x = speed_x * time

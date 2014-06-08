@@ -26,8 +26,8 @@ def main():
 
 	# game parameters
 	gameName = "Just War"
-	NUMBER_OF_ENEMIES = 1
-	screenWidth,screenHeight = (800,500)
+	NUMBER_OF_ENEMIES = 3
+	screenWidth,screenHeight = (800,600)
 	framerate = 60
 
 	screen = pygame.display.set_mode((screenWidth, screenHeight))
@@ -41,7 +41,8 @@ def main():
 	if android:
 	        android.init()
 	        android.map_key(android.KEYCODE_BACK, pygame.K_ESCAPE)
-	        android.map_key(android.KEYCODE_SPACE, pygame.K_SPACE)
+	        android.map_key(android.KEYCODE_K, pygame.K_k)
+	        android.map_key(android.KEYCODE_L, pygame.K_l)
 	        android.map_key(android.KEYCODE_A, pygame.K_a)
 	        android.map_key(android.KEYCODE_D, pygame.K_d)
 	        android.map_key(android.KEYCODE_W, pygame.K_w)
@@ -110,10 +111,11 @@ def main():
 					warriorGhostSpeed_y = -300
 				if key[K_s]:
 					warriorGhostSpeed_y = +300
-				if key[K_SPACE]:
+				if key[K_k]:
 					if len(firelist) < 1:
 						firelist.append( WarriorGhost1.Fire() )
-
+				if key[K_l]:
+					WarriorGhost1.shieldForce = 100
 
 		# move
 
@@ -157,7 +159,8 @@ def main():
 			else:
 				if WarriorGhost1.rect.collidepoint(shot.GetXY()):
 					shot.Boom()
-					#exit()
+					if WarriorGhost1.shieldForce == 0:
+						return
 
 		pygame.display.update()
 
