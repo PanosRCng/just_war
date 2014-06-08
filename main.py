@@ -27,7 +27,7 @@ def main():
 	# game parameters
 	gameName = "Just War"
 	NUMBER_OF_ENEMIES = 3
-	screenWidth,screenHeight = (800,600)
+	screenWidth,screenHeight = (800,500)
 	framerate = 60
 
 	screen = pygame.display.set_mode((screenWidth, screenHeight))
