@@ -9,8 +9,8 @@ from justwar.data.Warrior import Warrior
 from justwar.data.EnemyGhost import EnemyGhost
 from justwar.data.WarriorGhost import WarriorGhost
 
-# Import the android module. If we can't import it, set it to None - this
-# lets us test it, and check to see if we want android-specific behavior.
+# easy porting to android using the pygame subset for android
+# import the android module, if can't import it, set it to none
 try:
     import android
 except ImportError:
