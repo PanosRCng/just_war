@@ -37,7 +37,7 @@ def main():
 
 	Field = Background("field.jpg", (0,0))
 
-	# mapping between the android and the pygame keys.
+	# mapping Android keycodes to Pygame keysyms
 	if android:
 	        android.init()
 	        android.map_key(android.KEYCODE_BACK, pygame.K_ESCAPE)
@@ -83,9 +83,6 @@ def main():
 									randint(0,300)) )			
 
 
-		warriorGhostSpeed_x = 0
-		warriorGhostSpeed_y = 0
-
 
 		# handle input events
 
@@ -104,13 +101,13 @@ def main():
 					#exit()
 					return
 				if key[K_a]:
-					warriorGhostSpeed_x = -300
+					WarriorGhost1.speed_x = -300
 				if key[K_d]:
-					warriorGhostSpeed_x = +300
+					WarriorGhost1.speed_x = +300
 				if key[K_w]:
-					warriorGhostSpeed_y = -300
+					WarriorGhost1.speed_y = -300
 				if key[K_s]:
-					warriorGhostSpeed_y = +300
+					WarriorGhost1.speed_y = +300
 				if key[K_k]:
 					if len(firelist) < 1:
 						firelist.append( WarriorGhost1.Fire() )
@@ -119,7 +116,7 @@ def main():
 
 		# move
 
-		WarriorGhost1.Move(warriorGhostSpeed_x, warriorGhostSpeed_y, time)			
+		WarriorGhost1.Move(time)			
 
 
 		# show		

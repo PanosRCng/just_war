@@ -12,12 +12,15 @@ class Fire(GameElement):
 		self.imagefile = imagefile
 		self.boomCounter = 0
 
+		# initially load all shapes -- fewer disk I/O during the game
 		if self.speed < 0:
-			imagefile = imagefile + "_neg.png"
+			self.fireShape = self.load_image(imagefile + "_neg.png")
 		elif self.speed > 0:
-			imagefile = imagefile + ".png"
+			self.fireShape = self.load_image(imagefile + ".png")
 
-	        self.shape = self.load_image(imagefile)
+	        self.boomShape = self.load_image(self.imagefile + "_boom.png")
+
+	        self.shape = self.fireShape
 		self.width = self.shape.get_width()
 		self.height = self.shape.get_height()
 		self.rect = pygame.Rect(coord,(self.width, self.height))
@@ -51,9 +54,7 @@ class Fire(GameElement):
 		self.boomCounter = 1
 		self.speed = (copysign(1,self.speed)) * 500
 
-		imagefile = self.imagefile + "_boom.png"
-
-	        self.shape = self.load_image(imagefile)
+	        self.shape = self.boomShape
 		self.width = self.shape.get_width()
 		self.height = self.shape.get_height()
 		self.rect = pygame.Rect(self.GetXY(),(self.width, self.height))

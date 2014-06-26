@@ -20,4 +20,3 @@ class GameElement(pygame.sprite.Sprite):
             raise SystemExit, message
 
         return shape
-        

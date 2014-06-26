@@ -9,7 +9,13 @@ class Warrior(GameElement):
 
 		GameElement.__init__(self)
 
-	        self.shape = self.load_image(imagefile+".png")
+		# initially load all shapes -- fewer disk I/O during the game
+	        self.posShape = self.load_image(imagefile+".png")
+	        self.negShape = self.load_image(imagefile+"_neg"+".png")
+		self.posShieldShape = self.load_image(imagefile+"_shield"+".png")
+		self.negShieldShape = self.load_image(imagefile+"_shield"+"_neg"+".png")
+
+	        self.shape = self.posShape
 		self.width = self.shape.get_width()
 		self.height = self.shape.get_height()
 		self.rect = pygame.Rect(coord,(self.width, self.height))
@@ -22,7 +28,6 @@ class Warrior(GameElement):
 
 		self.imagefile = imagefile
 
-		self.speed_x = 0
 		self.x = 0
 		self.y = 0
 
@@ -34,16 +39,16 @@ class Warrior(GameElement):
 		imagefile = self.imagefile
 
 		if self.shieldForce > 0:
-			imagefile = imagefile + "_shield"
+			if self.firespeed > 0:
+				self.shape = self.posShieldShape
+			elif self.firespeed < 0:
+				self.shape = self.negShieldShape
+		else:
+			if self.firespeed > 0:
+				self.shape = self.posShape
+			elif self.firespeed < 0:
+				self.shape = self.negShape
 
-		if self.firespeed < 0:
-			imagefile = imagefile + "_neg"
-		elif self.firespeed > 0:
-			imagefile = imagefile
-			
-		imagefile = imagefile + ".png"
-
-		self.shape = self.load_image(imagefile)
 		self.width = self.shape.get_width()
 		self.height = self.shape.get_height()
 		self.rect = pygame.Rect((self.x,self.y),(self.width, self.height))
@@ -60,8 +65,6 @@ class Warrior(GameElement):
 
 		self.rect.move_ip(distance_x, distance_y)
 
-		self.speed_x = speed_x
-
 		# update fire direction
 		if self.speed_x != 0:
 			self.firespeed = (copysign(1,self.speed_x)) * abs(self.firespeed)
@@ -75,7 +78,4 @@ class Warrior(GameElement):
 		self.x = self.rect[0]
 		self.y = self.rect[1]
 
-	def Fire(self):
-		shot = Fire("fire_red", (self.rect[0], self.rect[1]+self.midheight), self.firespeed)
-		return shot
 
