@@ -1,4 +1,5 @@
 import pygame
+from justwar.data.Config import Config
 from justwar.data.GameElement import GameElement
 from math import copysign
 
@@ -10,6 +11,7 @@ class Fire(GameElement):
 
 		self.speed = speed
 		self.imagefile = imagefile
+		self.moveCounter = 0
 		self.boomCounter = 0
 
 		# initially load all shapes -- fewer disk I/O during the game
@@ -30,16 +32,20 @@ class Fire(GameElement):
 
 	def Move(self, time):
 
+		self.moveCounter = self.moveCounter + 1
+
 		if self.boomCounter > 0:
 			self.boomCounter = self.boomCounter + 1
 
 		distance = self.speed * time	
 		self.rect.move_ip(distance, 0)
 
-	def GoneOut(self,x):
-		if self.rect[0] >= x:
+	def FadeOut(self):
+		if self.rect[0] >= Config.screenWidth:
 			return True
 		elif self.rect[0] <= 0:
+			return True
+		elif self.moveCounter > 20:
 			return True
 		elif self.boomCounter > 3:
 			return True

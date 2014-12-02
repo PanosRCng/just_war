@@ -1,42 +1,39 @@
 import pygame
+from justwar.data.Config import Config
 from justwar.data.GameElement import GameElement
 from justwar.data.Fire import Fire
 from math import copysign
 
 class Warrior(GameElement):
 
-	def __init__ (self, imagefile, coord, min_coord, max_coord):
+
+	def __init__ (self, imagefile, coord):
 
 		GameElement.__init__(self)
 
 		# initially load all shapes -- fewer disk I/O during the game
-	        self.posShape = self.load_image(imagefile+".png")
-	        self.negShape = self.load_image(imagefile+"_neg"+".png")
-		self.posShieldShape = self.load_image(imagefile+"_shield"+".png")
-		self.negShieldShape = self.load_image(imagefile+"_shield"+"_neg"+".png")
+	        self.posShape = pygame.transform.scale( self.load_image(imagefile+".png"), (33, 80))
+	        self.negShape = pygame.transform.scale( self.load_image(imagefile+"_neg"+".png"), (33, 80) )
+		self.posShieldShape = pygame.transform.scale( self.load_image(imagefile+"_shield"+".png"), (87, 100) )
+		self.negShieldShape = pygame.transform.scale( self.load_image(imagefile+"_shield"+"_neg"+".png"), (87, 100) )
 
 	        self.shape = self.posShape
 		self.width = self.shape.get_width()
 		self.height = self.shape.get_height()
 		self.rect = pygame.Rect(coord,(self.width, self.height))
 
-		self.min_coord = min_coord
-		self.max_coord = (max_coord[0]-self.width, max_coord[1]-self.height)
+		self.min_coord = (0,0)
+		self.max_coord = (Config.screenWidth-self.width-50, Config.screenHeight-self.height)
 		self.midheight = self.height/2
-
-		self.firespeed = 800
-
-		self.imagefile = imagefile
 
 		self.x = 0
 		self.y = 0
-
+		self.firespeed = 800
+		self.fireForce = 100
 		self.shieldForce = 0
 
 
 	def Show(self, surface):
-
-		imagefile = self.imagefile
 
 		if self.shieldForce > 0:
 			if self.firespeed > 0:
@@ -57,6 +54,9 @@ class Warrior(GameElement):
 
 		if self.shieldForce > 0:
 			self.shieldForce = self.shieldForce - 10
+
+		if self.fireForce <= 0:
+			self.fireForce += 10
 
 
 	def Move(self, speed_x, speed_y, time):

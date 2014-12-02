@@ -4,17 +4,22 @@ from random import randint
 
 from pygame.locals import *
 
+from justwar.data.Config import Config
 from justwar.data.Background import Background
 from justwar.data.Warrior import Warrior
 from justwar.data.EnemyGhost import EnemyGhost
 from justwar.data.WarriorGhost import WarriorGhost
 
+# put this in if android
+from justwar.data.MoveKeyPad import MoveKeyPad
+from justwar.data.PowerKeyPad import PowerKeyPad
+
 # easy porting to android using the pygame subset for android
 # import the android module, if can't import it, set it to none
 try:
-    import android
+	import android
 except ImportError:
-    android = None
+	android = None
 
 
 
@@ -24,15 +29,9 @@ def main():
 
 	pygame.init()
 
-	# game parameters
-	gameName = "Just War"
-	NUMBER_OF_ENEMIES = 3
-	screenWidth,screenHeight = (800,500)
-	framerate = 60
-
-	screen = pygame.display.set_mode((screenWidth, screenHeight))
+	screen = pygame.display.set_mode((Config.screenWidth, Config.screenHeight))
 	#screen = pygame.display.set_mode( (screenWidth,screenHeight), DOUBLEBUF, 32)
-	pygame.display.set_caption(gameName)
+	pygame.display.set_caption(Config.gameName)
 	pygame.key.set_repeat(1,1)
 
 	Field = Background("field.jpg", (0,0))
@@ -48,10 +47,11 @@ def main():
 	        android.map_key(android.KEYCODE_W, pygame.K_w)
 	        android.map_key(android.KEYCODE_S, pygame.K_s)
 
-	warriorGhost1_pos = (screenWidth/4,screenHeight/2)
-	warrior_low = (0,0)
-	warrior_high = (screenWidth, screenHeight)
-	WarriorGhost1 = WarriorGhost("warrior1", warriorGhost1_pos, warrior_low, warrior_high)
+	# put this in if android
+	MoveKeyPad1 = MoveKeyPad(10, 400)
+	PowerKeyPad1 = PowerKeyPad(800, 400)
+
+	WarriorGhost1 = WarriorGhost()
 
 	clock = pygame.time.Clock()
 
@@ -61,9 +61,10 @@ def main():
 
 	enemyFirelist = []
 
-	while True:
-		time = clock.tick(framerate)/1000.0
+	touchedKeys = []
 
+	while True:
+		time = clock.tick(Config.framerate)/1000.0
 
 		# Android-specific:
         	if android:
@@ -74,13 +75,8 @@ def main():
 		# enemy recreation - revolution
 		
 		if not enemies:
-			for i in range(0, NUMBER_OF_ENEMIES):
-				enemies.append( EnemyGhost("warrior2", [randint(screenWidth-100,screenWidth), 
-									randint(0,screenHeight)],
-									warrior_low,
-									warrior_high,
-									randint(0,300),
-									randint(0,300)) )			
+			for i in range(0, Config.NUMBER_OF_ENEMIES):
+				enemies.append( EnemyGhost() )			
 
 
 
@@ -109,10 +105,41 @@ def main():
 				if key[K_s]:
 					WarriorGhost1.speed_y = +300
 				if key[K_k]:
-					if len(firelist) < 1:
+					if WarriorGhost1.fireForce > 0:
 						firelist.append( WarriorGhost1.Fire() )
 				if key[K_l]:
 					WarriorGhost1.shieldForce = 100
+
+			if event.type == pygame.MOUSEBUTTONDOWN:
+
+         			for i in MoveKeyPad1.keyArray:
+           				if i[1].collidepoint(event.pos):
+
+						touchedKeys.append(i[2])
+
+         			for j in PowerKeyPad1.keyArray:
+           				if j[1].collidepoint(event.pos):
+
+						touchedKeys.append(j[2])
+
+			if event.type==pygame.MOUSEBUTTONUP:
+
+				touchedKeys = []
+
+		for i in touchedKeys:
+			if i == 'w':
+				WarriorGhost1.speed_y = -400
+			elif i == 's':
+				WarriorGhost1.speed_y = +400
+			elif i == 'a':
+				WarriorGhost1.speed_x = -400
+			elif i == 'd':
+				WarriorGhost1.speed_x = +400
+			elif i == 'k':
+				if WarriorGhost1.fireForce > 0:
+					firelist.append( WarriorGhost1.Fire() )
+			elif i == 'l':
+				WarriorGhost1.shieldForce = 100
 
 		# move
 
@@ -122,15 +149,26 @@ def main():
 		# show		
 
 		Field.Show(screen)
+		MoveKeyPad1.Show(screen)
+		PowerKeyPad1.Show(screen)
+
 		WarriorGhost1.Show(screen)
 
 		for enemy in enemies:
+
+			enemy.checkArea(WarriorGhost1.x, WarriorGhost1.y)
 			enemy.Move(time)
 			enemy.Show(screen)
 
-			# do some probability math here
-			if randint(0,100) == 9:
-				enemyFirelist.append( enemy.Fire() )
+			if enemy.inDanger:
+
+				if enemy.personality == 1:
+					# do some probability math here
+					if randint(0,10) == 9:
+						if enemy.fireForce > 0:
+							enemyFirelist.append( enemy.Fire() )
+				elif enemy.personality == 0:
+					enemy.shieldForce = 100
 
 
 		# fast moving objects -- collisions
@@ -139,29 +177,32 @@ def main():
 			shot.Move(time)
 			shot.Show(screen)
 
-			if shot.GoneOut(screenWidth):
+			if shot.FadeOut():
 				firelist.remove(shot)
 			else:
 				for enemy in enemies:
 					if enemy.rect.collidepoint(shot.GetXY()):
 						shot.Boom()
-						enemies.remove(enemy)
+						if enemy.shieldForce == 0:
+							enemies.remove(enemy)
 
 		for shot in enemyFirelist:
 			shot.Move(time)
 			shot.Show(screen)
 
-			if shot.GoneOut(screenWidth):
+			if shot.FadeOut():
 				enemyFirelist.remove(shot)
 			else:
 				if WarriorGhost1.rect.collidepoint(shot.GetXY()):
 					shot.Boom()
 					if WarriorGhost1.shieldForce == 0:
-						return
+						#return
+						WarriorGhost1 = WarriorGhost()
 
 		pygame.display.update()
 
 if __name__ == "__main__":
+
 	main()
 
 
