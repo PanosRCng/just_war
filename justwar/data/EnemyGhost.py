@@ -15,6 +15,7 @@ class EnemyGhost(Warrior):
 		self.speed_x = randint(0,100)
 		self.speed_y = randint(0,100)
 		self.firespeed = 600
+		self.life = 20
 		self.inDanger = False
 		
 		# 1 for aggressive / 0 for defensive

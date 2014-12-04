@@ -31,6 +31,7 @@ class Warrior(GameElement):
 		self.firespeed = 800
 		self.fireForce = 100
 		self.shieldForce = 0
+		self.life = 200
 
 
 	def Show(self, surface):

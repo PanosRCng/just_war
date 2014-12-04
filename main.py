@@ -6,6 +6,7 @@ from pygame.locals import *
 
 from justwar.data.Config import Config
 from justwar.data.Background import Background
+from justwar.data.HealthBar import HealthBar
 from justwar.data.Warrior import Warrior
 from justwar.data.EnemyGhost import EnemyGhost
 from justwar.data.WarriorGhost import WarriorGhost
@@ -52,6 +53,8 @@ def main():
 	PowerKeyPad1 = PowerKeyPad(800, 400)
 
 	WarriorGhost1 = WarriorGhost()
+
+	HealthBar1 = HealthBar(10, 10)
 
 	clock = pygame.time.Clock()
 
@@ -152,6 +155,9 @@ def main():
 		MoveKeyPad1.Show(screen)
 		PowerKeyPad1.Show(screen)
 
+		HealthBar1.health_value = WarriorGhost1.life
+		HealthBar1.Show(screen)
+
 		WarriorGhost1.Show(screen)
 
 		for enemy in enemies:
@@ -184,6 +190,9 @@ def main():
 					if enemy.rect.collidepoint(shot.GetXY()):
 						shot.Boom()
 						if enemy.shieldForce == 0:
+							enemy.life -= 10
+
+						if enemy.life < 0:
 							enemies.remove(enemy)
 
 		for shot in enemyFirelist:
@@ -196,6 +205,9 @@ def main():
 				if WarriorGhost1.rect.collidepoint(shot.GetXY()):
 					shot.Boom()
 					if WarriorGhost1.shieldForce == 0:
+						WarriorGhost1.life -= 10
+
+					if WarriorGhost1.life <= 0: 
 						#return
 						WarriorGhost1 = WarriorGhost()
 
