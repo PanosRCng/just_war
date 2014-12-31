@@ -40,12 +40,12 @@ class Fire(GameElement):
 		distance = self.speed * time	
 		self.rect.move_ip(distance, 0)
 
+		if (self.rect[0] >= Config.screenWidth-70) or (self.rect[0] <= 70):
+			self.Boom()
+
+
 	def FadeOut(self):
-		if self.rect[0] >= Config.screenWidth:
-			return True
-		elif self.rect[0] <= 0:
-			return True
-		elif self.moveCounter > 20:
+		if self.moveCounter > 10:
 			return True
 		elif self.boomCounter > 3:
 			return True

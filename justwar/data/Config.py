@@ -4,7 +4,7 @@
 class Config():
 
 	screenWidth = 1024
-	screenHeight = 600
+	screenHeight = 640
 	gameName = "Just War"
-	NUMBER_OF_ENEMIES = 5
+	NUMBER_OF_ENEMIES = 3
 	framerate = 60

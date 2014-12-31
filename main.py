@@ -35,7 +35,7 @@ def main():
 	pygame.display.set_caption(Config.gameName)
 	pygame.key.set_repeat(1,1)
 
-	Field = Background("field.jpg", (0,0))
+	Field = Background("field.png", (0,0))
 
 	# mapping Android keycodes to Pygame keysyms
 	if android:
@@ -49,8 +49,9 @@ def main():
 	        android.map_key(android.KEYCODE_S, pygame.K_s)
 
 	# put this in if android
-	MoveKeyPad1 = MoveKeyPad(10, 400)
-	PowerKeyPad1 = PowerKeyPad(800, 400)
+	if android:
+		MoveKeyPad1 = MoveKeyPad(10, 400)
+		PowerKeyPad1 = PowerKeyPad(800, 400)
 
 	WarriorGhost1 = WarriorGhost()
 
@@ -113,36 +114,40 @@ def main():
 				if key[K_l]:
 					WarriorGhost1.shieldForce = 100
 
-			if event.type == pygame.MOUSEBUTTONDOWN:
+			if android:
+				if event.type == pygame.MOUSEBUTTONDOWN:
 
-         			for i in MoveKeyPad1.keyArray:
-           				if i[1].collidepoint(event.pos):
+         				for i in MoveKeyPad1.keyArray:
+           					if i[1].collidepoint(event.pos):
 
-						touchedKeys.append(i[2])
+							touchedKeys.append(i[2])
 
-         			for j in PowerKeyPad1.keyArray:
-           				if j[1].collidepoint(event.pos):
+         				for j in PowerKeyPad1.keyArray:
+           					if j[1].collidepoint(event.pos):
 
-						touchedKeys.append(j[2])
+							touchedKeys.append(j[2])
 
-			if event.type==pygame.MOUSEBUTTONUP:
+				if event.type==pygame.MOUSEBUTTONUP:
 
-				touchedKeys = []
+					touchedKeys = []
 
-		for i in touchedKeys:
-			if i == 'w':
-				WarriorGhost1.speed_y = -400
-			elif i == 's':
-				WarriorGhost1.speed_y = +400
-			elif i == 'a':
-				WarriorGhost1.speed_x = -400
-			elif i == 'd':
-				WarriorGhost1.speed_x = +400
-			elif i == 'k':
-				if WarriorGhost1.fireForce > 0:
-					firelist.append( WarriorGhost1.Fire() )
-			elif i == 'l':
-				WarriorGhost1.shieldForce = 100
+
+		if android:
+
+			for i in touchedKeys:
+				if i == 'w':
+					WarriorGhost1.speed_y = -400
+				elif i == 's':
+					WarriorGhost1.speed_y = +400
+				elif i == 'a':
+					WarriorGhost1.speed_x = -400
+				elif i == 'd':
+					WarriorGhost1.speed_x = +400
+				elif i == 'k':
+					if WarriorGhost1.fireForce > 0:
+						firelist.append( WarriorGhost1.Fire() )
+				elif i == 'l':
+					WarriorGhost1.shieldForce = 100
 
 		# move
 
@@ -152,8 +157,10 @@ def main():
 		# show		
 
 		Field.Show(screen)
-		MoveKeyPad1.Show(screen)
-		PowerKeyPad1.Show(screen)
+
+		if android:
+			MoveKeyPad1.Show(screen)
+			PowerKeyPad1.Show(screen)
 
 		HealthBar1.health_value = WarriorGhost1.life
 		HealthBar1.Show(screen)
