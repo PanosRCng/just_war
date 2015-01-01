@@ -5,7 +5,7 @@ from random import randint
 from pygame.locals import *
 
 from justwar.data.Config import Config
-from justwar.data.Background import Background
+from justwar.data.Room import Room 
 from justwar.data.HealthBar import HealthBar
 from justwar.data.Warrior import Warrior
 from justwar.data.EnemyGhost import EnemyGhost
@@ -35,7 +35,7 @@ def main():
 	pygame.display.set_caption(Config.gameName)
 	pygame.key.set_repeat(1,1)
 
-	Field = Background("field.png", (0,0))
+	Room1 = Room()
 
 	# mapping Android keycodes to Pygame keysyms
 	if android:
@@ -65,7 +65,9 @@ def main():
 
 	enemyFirelist = []
 
-	touchedKeys = []
+	if android:
+		touchedKeys = []
+
 
 	while True:
 		time = clock.tick(Config.framerate)/1000.0
@@ -156,7 +158,7 @@ def main():
 
 		# show		
 
-		Field.Show(screen)
+		Room1.Show(screen)
 
 		if android:
 			MoveKeyPad1.Show(screen)

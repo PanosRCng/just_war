@@ -3,6 +3,7 @@ from justwar.data.Config import Config
 from justwar.data.GameElement import GameElement
 from justwar.data.Fire import Fire
 from math import copysign
+from justwar.data.Room import stoneList
 
 class Warrior(GameElement):
 
@@ -64,6 +65,9 @@ class Warrior(GameElement):
 		distance_x = speed_x * time
 		distance_y = speed_y * time
 
+		old_x = self.rect[0]
+		old_y = self.rect[1]
+
 		self.rect.move_ip(distance_x, distance_y)
 
 		# update fire direction
@@ -76,7 +80,13 @@ class Warrior(GameElement):
 			if self.rect[i] > self.max_coord[i]:
 				self.rect[i] = self.max_coord[i]
 
+		for stone in stoneList:
+			if stone.rect.colliderect(self.rect):
+				self.rect[0] = old_x
+				self.rect[1] = old_y
+
 		self.x = self.rect[0]
 		self.y = self.rect[1]
+
 
 

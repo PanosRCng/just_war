@@ -2,6 +2,7 @@ import pygame
 from justwar.data.Config import Config
 from justwar.data.GameElement import GameElement
 from math import copysign
+from justwar.data.Room import stoneList
 
 class Fire(GameElement):
 
@@ -42,6 +43,10 @@ class Fire(GameElement):
 
 		if (self.rect[0] >= Config.screenWidth-70) or (self.rect[0] <= 70):
 			self.Boom()
+
+		for stone in stoneList:
+			if stone.rect.collidepoint(self.GetXY()):
+				self.Boom()
 
 
 	def FadeOut(self):
