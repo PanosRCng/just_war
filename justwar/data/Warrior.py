@@ -24,7 +24,7 @@ class Warrior(GameElement):
 		self.rect = pygame.Rect(coord,(self.width, self.height))
 
 		self.min_coord = (Config.screenWidth-960, 0)
-		self.max_coord = (Config.screenWidth-self.width-60, Config.screenHeight-self.height-70)
+		self.max_coord = (Config.screenWidth-self.width-60, Config.screenHeight-self.height-60)
 		self.midheight = self.height/2
 
 		self.x = 0

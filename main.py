@@ -6,6 +6,7 @@ from pygame.locals import *
 
 from justwar.data.Config import Config
 from justwar.data.Room import Room 
+from justwar.data.Room import gateList
 from justwar.data.HealthBar import HealthBar
 from justwar.data.Warrior import Warrior
 from justwar.data.EnemyGhost import EnemyGhost
@@ -35,7 +36,7 @@ def main():
 	pygame.display.set_caption(Config.gameName)
 	pygame.key.set_repeat(1,1)
 
-	Room1 = Room()
+	CurrentRoom = Room()
 
 	# mapping Android keycodes to Pygame keysyms
 	if android:
@@ -155,10 +156,32 @@ def main():
 
 		WarriorGhost1.Move(time)			
 
+		if WarriorGhost1.throughGate != -1:
+
+			CurrentRoom = Room()
+
+			firelist[:] = []
+			enemies[:] = []
+			enemyFirelist[:] = []
+
+			if WarriorGhost1.throughGate == 0:
+					WarriorGhost1.x = gateList[2].rect[0]
+					WarriorGhost1.y = gateList[2].rect[1]-WarriorGhost1.height-10
+			elif WarriorGhost1.throughGate == 1:
+					WarriorGhost1.x = gateList[3].rect[0]+gateList[2].width
+					WarriorGhost1.y = gateList[3].rect[1]
+			elif WarriorGhost1.throughGate == 2:
+					WarriorGhost1.x = gateList[0].rect[0]
+					WarriorGhost1.y = gateList[0].rect[1]+WarriorGhost1.height+10
+			elif WarriorGhost1.throughGate == 3:
+					WarriorGhost1.x = gateList[1].rect[0]-WarriorGhost1.width-10
+					WarriorGhost1.y = gateList[1].rect[1]
+
+			WarriorGhost1.throughGate = -1
 
 		# show		
 
-		Room1.Show(screen)
+		CurrentRoom.Show(screen)
 
 		if android:
 			MoveKeyPad1.Show(screen)
