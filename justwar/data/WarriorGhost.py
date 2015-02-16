@@ -2,7 +2,7 @@ import pygame
 from justwar.data.Config import Config
 from justwar.data.Warrior import Warrior
 from justwar.data.Fire import Fire
-from justwar.data.Room import gateList
+from justwar.data.Room import gates
 
 class WarriorGhost(Warrior):
 
@@ -17,9 +17,9 @@ class WarriorGhost(Warrior):
 	def Move(self, time):
 		super(WarriorGhost, self).Move(self.speed_x, self.speed_y, time)
 
-		for gate in gateList:
-			if gate.rect.colliderect(self.rect):
-				self.throughGate = gate.direction
+		for gate in gates.keys():
+			if gates[gate].rect.colliderect(self.rect):
+				self.throughGate = gates[gate].direction
 
 		self.speed_x = 0
 		self.speed_y = 0

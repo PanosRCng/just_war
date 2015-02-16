@@ -9,11 +9,14 @@ class Stone(GameElement):
 
 		GameElement.__init__(self)
 
-		self.shape = self.load_image("stone.png")
+		# determines the stone size
+		size_offset = randint(0,30)
+
+	        self.shape = pygame.transform.scale( self.load_image("stone.png"), (68-size_offset, 64-size_offset))
 		self.width = self.shape.get_width()
 		self.height = self.shape.get_height()
 		
-		self.coord = ( randint(Config.screenWidth-900, Config.screenWidth-200), randint(Config.screenHeight-550,Config.screenHeight-110) )
+		self.coord = ( randint(Config.screenWidth-800, Config.screenWidth-300), randint(Config.screenHeight-450,Config.screenHeight-210) )
 
 		self.rect = pygame.Rect(self.coord,(self.width, self.height))
 
