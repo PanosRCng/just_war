@@ -11,7 +11,7 @@ just war
 - requirements:
 
 	- python
-	- pygame (http://pygame.org/tags/game)
+	- pygame (http://pygame.org)
 
 
 - run:

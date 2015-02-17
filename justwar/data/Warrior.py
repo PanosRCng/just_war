@@ -13,10 +13,10 @@ class Warrior(GameElement):
 		GameElement.__init__(self)
 
 		# initially load all shapes -- fewer disk I/O during the game
-	        self.posShape = pygame.transform.scale( self.load_image(imagefile+".png"), (33, 80))
-	        self.negShape = pygame.transform.scale( self.load_image(imagefile+"_neg"+".png"), (33, 80) )
-		self.posShieldShape = pygame.transform.scale( self.load_image(imagefile+"_shield"+".png"), (87, 100) )
-		self.negShieldShape = pygame.transform.scale( self.load_image(imagefile+"_shield"+"_neg"+".png"), (87, 100) )
+	        self.posShape = pygame.transform.scale( self.load_image(imagefile+".png"), (54, 69))
+	        self.negShape = pygame.transform.scale( self.load_image(imagefile+"_neg"+".png"), (54, 69) )
+		self.posShieldShape = pygame.transform.scale( self.load_image(imagefile+"_shield"+".png"), (65, 75) )
+		self.negShieldShape = pygame.transform.scale( self.load_image(imagefile+"_shield"+"_neg"+".png"), (65, 75) )
 
 	        self.shape = self.posShape
 		self.width = self.shape.get_width()
