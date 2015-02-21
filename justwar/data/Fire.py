@@ -6,24 +6,30 @@ from justwar.data.Room import stoneList
 
 class Fire(GameElement):
 
-	def __init__(self, imagefile, coord, speed):
+	def __init__(self, imagefile, coord, speed, direction):
 
 		GameElement.__init__(self)
 
+		self.direction = direction
 		self.speed = speed
 		self.imagefile = imagefile
 		self.moveCounter = 0
 		self.boomCounter = 0
 
 		# initially load all shapes -- fewer disk I/O during the game
-		if self.speed < 0:
-			self.fireShape = self.load_image(imagefile + "_neg.png")
-		elif self.speed > 0:
-			self.fireShape = self.load_image(imagefile + ".png")
+		if self.direction == "x":
+			if self.speed < 0:
+				self.shape = self.load_image(imagefile + "_neg.png")
+			elif self.speed > 0:
+				self.shape = self.load_image(imagefile + ".png")
+		else:
+			if self.speed < 0:
+				self.shape = self.load_image(imagefile + "_up.png")
+			elif self.speed > 0:
+				self.shape = self.load_image(imagefile + "_down.png")
 
 	        self.boomShape = self.load_image(self.imagefile + "_boom.png")
 
-	        self.shape = self.fireShape
 		self.width = self.shape.get_width()
 		self.height = self.shape.get_height()
 		self.rect = pygame.Rect(coord,(self.width, self.height))
@@ -38,10 +44,14 @@ class Fire(GameElement):
 		if self.boomCounter > 0:
 			self.boomCounter = self.boomCounter + 1
 
-		distance = self.speed * time	
-		self.rect.move_ip(distance, 0)
+		distance = self.speed * time
 
-		if (self.rect[0] >= Config.screenWidth-70) or (self.rect[0] <= 70):
+		if self.direction == "x":
+			self.rect.move_ip(distance, 0)
+		elif self.direction == "y":
+			self.rect.move_ip(0, distance)
+
+		if (self.rect[0] >= Config.screenWidth-70) or (self.rect[0] <= 70) or (self.rect[1] >= Config.screenHeight-70) or (self.rect[1] <= 0):
 			self.Boom()
 
 		for stone in stoneList:

@@ -15,8 +15,12 @@ class Warrior(GameElement):
 		# initially load all shapes -- fewer disk I/O during the game
 	        self.posShape = pygame.transform.scale( self.load_image(imagefile+".png"), (54, 69))
 	        self.negShape = pygame.transform.scale( self.load_image(imagefile+"_neg"+".png"), (54, 69) )
+	        self.upShape = pygame.transform.scale( self.load_image(imagefile+"_front"+".png"), (65, 69) )
+	        self.downShape = pygame.transform.scale( self.load_image(imagefile+"_back"+".png"), (65, 69) )
 		self.posShieldShape = pygame.transform.scale( self.load_image(imagefile+"_shield"+".png"), (65, 75) )
 		self.negShieldShape = pygame.transform.scale( self.load_image(imagefile+"_shield"+"_neg"+".png"), (65, 75) )
+		self.downShieldShape = pygame.transform.scale( self.load_image(imagefile+"_shield"+"_back"+".png"), (79, 71) )
+		self.upShieldShape = pygame.transform.scale( self.load_image(imagefile+"_shield"+"_front"+".png"), (76, 71) )
 
 	        self.shape = self.posShape
 		self.width = self.shape.get_width()
@@ -25,11 +29,11 @@ class Warrior(GameElement):
 
 		self.min_coord = (Config.screenWidth-960, 0)
 		self.max_coord = (Config.screenWidth-self.width-60, Config.screenHeight-self.height-60)
-		self.midheight = self.height/2
 
 		self.x = 0
 		self.y = 0
 		self.firespeed = 800
+		self.firespeed_y = 0
 		self.fireForce = 100
 		self.shieldForce = 0
 		self.life = 200
@@ -42,11 +46,21 @@ class Warrior(GameElement):
 				self.shape = self.posShieldShape
 			elif self.firespeed < 0:
 				self.shape = self.negShieldShape
+
+			if self.firespeed_y > 0:
+				self.shape = self.upShieldShape
+			elif self.firespeed_y < 0:
+				self.shape = self.downShieldShape
 		else:
 			if self.firespeed > 0:
 				self.shape = self.posShape
 			elif self.firespeed < 0:
 				self.shape = self.negShape
+
+			if self.firespeed_y > 0:
+				self.shape = self.upShape
+			elif self.firespeed_y < 0:
+				self.shape = self.downShape
 
 		self.width = self.shape.get_width()
 		self.height = self.shape.get_height()
@@ -71,7 +85,14 @@ class Warrior(GameElement):
 		self.rect.move_ip(distance_x, distance_y)
 
 		# update fire direction
+		if self.speed_y != 0:
+			self.firespeed_y = 800
+			self.firespeed = 0
+			self.firespeed_y = (copysign(1,self.speed_y)) * abs(self.firespeed_y)
+
 		if self.speed_x != 0:
+			self.firespeed = 800
+			self.firespeed_y = 0
 			self.firespeed = (copysign(1,self.speed_x)) * abs(self.firespeed)
 
 		for i in (0,1):
