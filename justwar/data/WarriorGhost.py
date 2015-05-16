@@ -8,9 +8,7 @@ class WarriorGhost(Warrior):
 
 
 	def __init__(self):
-		super(WarriorGhost, self).__init__("warrior1", (Config.screenWidth/4,Config.screenHeight/2))
-		self.speed_x = 0
-		self.speed_y = 0
+		super(WarriorGhost, self).__init__("warrior1", (Config.screenWidth/4,Config.screenHeight/2), 8)
 		self.throughGate = -1
 
 	def Move(self, time):
@@ -25,12 +23,10 @@ class WarriorGhost(Warrior):
 
 
 	def Fire(self):
+		
 		self.fireForce = self.fireForce - 100
 
-		if self.firespeed != 0:
-			shot = Fire("fire_red", (self.rect[0], self.rect[1]+(self.height/2)), self.firespeed, "x")
-		else:
-			shot = Fire("fire_red", (self.rect[0]+(self.width/2), self.rect[1]), self.firespeed_y, "y")
+		shot = Fire("fire_red", self.rect, self.firespeed, self.pointer.direction)
 
 		return shot
 

@@ -4,9 +4,11 @@ from justwar.data.GameElement import GameElement
 from math import copysign
 from justwar.data.Room import stoneList
 
+
 class Fire(GameElement):
 
-	def __init__(self, imagefile, coord, speed, direction):
+
+	def __init__(self, imagefile, warrior_rect, speed, direction):
 
 		GameElement.__init__(self)
 
@@ -17,25 +19,20 @@ class Fire(GameElement):
 		self.boomCounter = 0
 
 		# initially load all shapes -- fewer disk I/O during the game
-		if self.direction == "x":
-			if self.speed < 0:
-				self.shape = self.load_image(imagefile + "_neg.png")
-			elif self.speed > 0:
-				self.shape = self.load_image(imagefile + ".png")
-		else:
-			if self.speed < 0:
-				self.shape = self.load_image(imagefile + "_up.png")
-			elif self.speed > 0:
-				self.shape = self.load_image(imagefile + "_down.png")
+
+		self.imageFiles = { 2 : imagefile + ".png",
+				    4 : imagefile + "_down.png",
+				    1 : imagefile + "_neg.png",
+				    3 : imagefile + "_up.png" }
 
 	        self.boomShape = self.load_image(self.imagefile + "_boom.png")
 
-		self.width = self.shape.get_width()
-		self.height = self.shape.get_height()
-		self.rect = pygame.Rect(coord,(self.width, self.height))
+		self.__Shaping( self.load_image( self.imageFiles[ direction ] ), (warrior_rect.centerx, warrior_rect.centery) )
+
 
 	def Show(self, surface):
 		surface.blit(self.shape, (self.rect[0], self.rect[1]))
+
 
 	def Move(self, time):
 
@@ -44,14 +41,14 @@ class Fire(GameElement):
 		if self.boomCounter > 0:
 			self.boomCounter = self.boomCounter + 1
 
-		distance = self.speed * time
+		distance = pow(-1, self.direction) * self.speed * time
 
-		if self.direction == "x":
+		if (self.direction == 1) or (self.direction == 2):
 			self.rect.move_ip(distance, 0)
-		elif self.direction == "y":
+		elif (self.direction == 3) or (self.direction == 4):
 			self.rect.move_ip(0, distance)
 
-		if (self.rect[0] >= Config.screenWidth-70) or (self.rect[0] <= 70) or (self.rect[1] >= Config.screenHeight-70) or (self.rect[1] <= 0):
+		if (self.rect.centerx > self.max_coord[0]) or (self.rect.centerx < self.min_coord[0]) or (self.rect.centery > self.max_coord[1]) or (self.rect.centery < self.min_coord[1]):
 			self.Boom()
 
 		for stone in stoneList:
@@ -60,24 +57,34 @@ class Fire(GameElement):
 
 
 	def FadeOut(self):
-		if self.moveCounter > 10:
+		if self.moveCounter > 20:
 			return True
-		elif self.boomCounter > 3:
+		elif self.boomCounter > 10:
 			return True
 		else:
 			return False
 
+
 	def GetXY(self):
-		return (self.rect[0], self.rect[1])
+		return (self.rect.centerx, self.rect.centery)
+
 
 	def Boom(self):
 
 		self.boomCounter = 1
-		self.speed = (copysign(1,self.speed)) * 500
+		self.speed = (copysign(1,self.speed)) * 100
 
-	        self.shape = self.boomShape
+		self.__Shaping( self.boomShape, (self.GetXY()) )
+
+
+	def __Shaping(self, new_shape, coord):
+
+	        self.shape = new_shape
+
 		self.width = self.shape.get_width()
 		self.height = self.shape.get_height()
-		self.rect = pygame.Rect(self.GetXY(),(self.width, self.height))
+		self.rect = pygame.Rect( (coord[0]-(self.width/2), coord[1]-(self.height/2)), (self.width, self.height) )
+		self.min_coord = (Config.terrain_min_width, 20)
+		self.max_coord = (Config.terrain_max_width, Config.terrain_max_height)
 
 

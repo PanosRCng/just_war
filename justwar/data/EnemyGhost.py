@@ -10,8 +10,9 @@ class EnemyGhost(Warrior):
 
 
 	def __init__(self):
-		super(EnemyGhost, self).__init__("warrior2", [randint(Config.screenWidth-700,Config.screenWidth-100), 
-									randint(Config.screenHeight-400,Config.screenHeight-100)])
+		super(EnemyGhost, self).__init__("warrior2", [randint(Config.terrain_min_width,Config.terrain_max_width), 
+									randint(Config.terrain_min_height,Config.terrain_max_height)],
+									randint(0,9))
 
 		self.speed_x = randint(50,100)
 		self.speed_y = randint(50,100)
@@ -21,7 +22,9 @@ class EnemyGhost(Warrior):
 		# 1 for aggressive / 0 for defensive
 		self.personality = randint(0,1)
 
+
 	def Move(self, time):
+
 		super(EnemyGhost, self).Move(self.speed_x, self.speed_y, time)
 
 		if (self.inDanger == True):
@@ -58,12 +61,10 @@ class EnemyGhost(Warrior):
 
 
 	def Fire(self):	
+
 		self.fireForce = self.fireForce - 10
 
-		if self.firespeed != 0:
-			shot = Fire("fire_blue", (self.rect[0], self.rect[1]+(self.height/2)), self.firespeed, "x")
-		else:
-			shot = Fire("fire_blue", (self.rect[0]+(self.width/2), self.rect[1]), self.firespeed_y, "y")
+		shot = Fire("fire_blue", self.rect, self.firespeed, self.pointer.direction)
 
 		return shot
 

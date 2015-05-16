@@ -1,78 +1,54 @@
 import pygame
 from justwar.data.Config import Config
 from justwar.data.GameElement import GameElement
+from justwar.data.Pointer import Pointer
 from justwar.data.Fire import Fire
 from math import copysign
 from justwar.data.Room import stoneList
 
 class Warrior(GameElement):
 
+	ratio_map = [ 0.4, 0.5, 0.55, 0.6, 0.7, 0.75, 0.8, 0.9, 1.0, 1.1, 1.2 ]
 
-	def __init__ (self, imagefile, coord):
+	def __init__ (self, imagefile, coord, sizeType):
 
 		GameElement.__init__(self)
 
+		ratio = self.ratio_map[sizeType]
+
 		# initially load all shapes -- fewer disk I/O during the game
-	        self.posShape = pygame.transform.scale( self.load_image(imagefile+".png"), (54, 69))
-	        self.negShape = pygame.transform.scale( self.load_image(imagefile+"_neg"+".png"), (54, 69) )
-	        self.upShape = pygame.transform.scale( self.load_image(imagefile+"_front"+".png"), (65, 69) )
-	        self.downShape = pygame.transform.scale( self.load_image(imagefile+"_back"+".png"), (65, 69) )
-		self.posShieldShape = pygame.transform.scale( self.load_image(imagefile+"_shield"+".png"), (65, 75) )
-		self.negShieldShape = pygame.transform.scale( self.load_image(imagefile+"_shield"+"_neg"+".png"), (65, 75) )
-		self.downShieldShape = pygame.transform.scale( self.load_image(imagefile+"_shield"+"_back"+".png"), (79, 71) )
-		self.upShieldShape = pygame.transform.scale( self.load_image(imagefile+"_shield"+"_front"+".png"), (76, 71) )
-
-	        self.shape = self.posShape
-		self.width = self.shape.get_width()
-		self.height = self.shape.get_height()
-		self.rect = pygame.Rect(coord,(self.width, self.height))
-
-		self.min_coord = (Config.screenWidth-960, 0)
-		self.max_coord = (Config.screenWidth-self.width-60, Config.screenHeight-self.height-60)
+		self.shapes = { 2 : self.load_image_scaled(imagefile+".png", ratio), 
+				4 : self.load_image_scaled(imagefile+"_front"+".png", ratio),
+				1 : self.load_image_scaled(imagefile+"_neg"+".png", ratio),
+				3 : self.load_image_scaled(imagefile+"_back"+".png", ratio),
+				6 : self.load_image_scaled(imagefile+"_shield"+".png", ratio),
+				8 : self.load_image_scaled(imagefile+"_shield"+"_front"+".png", ratio),
+				5 : self.load_image_scaled(imagefile+"_shield"+"_neg"+".png", ratio),
+				7 : self.load_image_scaled(imagefile+"_shield"+"_back"+".png", ratio) }
 
 		self.x = 0
 		self.y = 0
 		self.firespeed = 800
-		self.firespeed_y = 0
 		self.fireForce = 100
 		self.shieldForce = 0
 		self.life = 200
+
+		self.speed_x = 0
+		self.speed_y = 0
+
+		self.pointer = Pointer()
+
+		self.__Shaping(self.shapes[2], coord)
 
 
 	def Show(self, surface):
 
 		if self.shieldForce > 0:
-			if self.firespeed > 0:
-				self.shape = self.posShieldShape
-			elif self.firespeed < 0:
-				self.shape = self.negShieldShape
-
-			if self.firespeed_y > 0:
-				self.shape = self.upShieldShape
-			elif self.firespeed_y < 0:
-				self.shape = self.downShieldShape
+			self.__Shaping(self.shapes[ (self.pointer.direction) + 4 ], (self.x, self.y))
 		else:
-			if self.firespeed > 0:
-				self.shape = self.posShape
-			elif self.firespeed < 0:
-				self.shape = self.negShape
-
-			if self.firespeed_y > 0:
-				self.shape = self.upShape
-			elif self.firespeed_y < 0:
-				self.shape = self.downShape
-
-		self.width = self.shape.get_width()
-		self.height = self.shape.get_height()
-		self.rect = pygame.Rect((self.x,self.y),(self.width, self.height))
+			self.__Shaping(self.shapes[self.pointer.direction], (self.x, self.y))
 
 		surface.blit(self.shape, (self.rect[0], self.rect[1]))
-
-		if self.shieldForce > 0:
-			self.shieldForce = self.shieldForce - 10
-
-		if self.fireForce <= 0:
-			self.fireForce += 10
 
 
 	def Move(self, speed_x, speed_y, time):
@@ -84,16 +60,8 @@ class Warrior(GameElement):
 
 		self.rect.move_ip(distance_x, distance_y)
 
-		# update fire direction
-		if self.speed_y != 0:
-			self.firespeed_y = 800
-			self.firespeed = 0
-			self.firespeed_y = (copysign(1,self.speed_y)) * abs(self.firespeed_y)
-
-		if self.speed_x != 0:
-			self.firespeed = 800
-			self.firespeed_y = 0
-			self.firespeed = (copysign(1,self.speed_x)) * abs(self.firespeed)
+		# update pointer direction
+		self.pointer.update(speed_x, speed_y)
 
 		for i in (0,1):
 			if self.rect[i] < self.min_coord[i]:
@@ -113,6 +81,26 @@ class Warrior(GameElement):
 
 		self.x = self.rect[0]
 		self.y = self.rect[1]
+
+		if self.shieldForce > 0:
+			self.shieldForce = self.shieldForce - 10
+
+		if self.fireForce <= 0:
+			self.fireForce += 10
+
+
+	def __Shaping(self, new_shape, coord):
+
+	        self.shape = new_shape
+
+		self.width = self.shape.get_width()
+		self.height = self.shape.get_height()
+		self.rect = pygame.Rect(coord,(self.width, self.height))
+		self.min_coord = (Config.terrain_min_width, Config.terrain_min_height-self.height)
+		self.max_coord = (Config.terrain_max_width-self.width, Config.terrain_max_height-self.height)
+
+
+
 
 
 
