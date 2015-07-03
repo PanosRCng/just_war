@@ -17,14 +17,17 @@ class Warrior(GameElement):
 		ratio = self.ratio_map[sizeType]
 
 		# initially load all shapes -- fewer disk I/O during the game
-		self.shapes = { 2 : self.load_image_scaled(imagefile+".png", ratio), 
+		self.shapes = { 2 : self.load_image_scaled(imagefile+".png", ratio),
 				4 : self.load_image_scaled(imagefile+"_front"+".png", ratio),
-				1 : self.load_image_scaled(imagefile+"_neg"+".png", ratio),
 				3 : self.load_image_scaled(imagefile+"_back"+".png", ratio),
 				6 : self.load_image_scaled(imagefile+"_shield"+".png", ratio),
 				8 : self.load_image_scaled(imagefile+"_shield"+"_front"+".png", ratio),
-				5 : self.load_image_scaled(imagefile+"_shield"+"_neg"+".png", ratio),
-				7 : self.load_image_scaled(imagefile+"_shield"+"_back"+".png", ratio) }
+				7 : self.load_image_scaled(imagefile+"_shield"+"_back"+".png", ratio)
+			      }
+
+		# flip what can be flipped -- fewer disk I/O
+		self.shapes[1] = pygame.transform.flip(self.shapes[2], True, False)
+		self.shapes[5] = pygame.transform.flip(self.shapes[6], True, False)
 
 		self.x = 0
 		self.y = 0

@@ -19,15 +19,15 @@ class Fire(GameElement):
 		self.boomCounter = 0
 
 		# initially load all shapes -- fewer disk I/O during the game
-
-		self.imageFiles = { 2 : imagefile + ".png",
-				    4 : imagefile + "_down.png",
-				    1 : imagefile + "_neg.png",
-				    3 : imagefile + "_up.png" }
-
+		self.shapes = { 2 : self.load_image(self.imagefile + '.png') }
 	        self.boomShape = self.load_image(self.imagefile + "_boom.png")
 
-		self.__Shaping( self.load_image( self.imageFiles[ direction ] ), (warrior_rect.centerx, warrior_rect.centery) )
+		# rotate what can be rotated -- fewer disk I/O
+		self.shapes[4] =  pygame.transform.rotate(self.shapes[2], -90)
+		self.shapes[1] =  pygame.transform.rotate(self.shapes[2], 180)
+		self.shapes[3] =  pygame.transform.rotate(self.shapes[2], 90)
+
+		self.__Shaping( self.shapes[direction], (warrior_rect.centerx, warrior_rect.centery) )
 
 
 	def Show(self, surface):
