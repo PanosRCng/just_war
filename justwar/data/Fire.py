@@ -53,13 +53,15 @@ class Fire(GameElement):
 
 		for stone in stoneList:
 			if stone.rect.collidepoint(self.GetXY()):
-				self.Boom()
+				if not stone.broken:
+					self.Boom()
+					stone.Hit()
 
 
 	def FadeOut(self):
-		if self.moveCounter > 20:
+		if self.moveCounter > 40:
 			return True
-		elif self.boomCounter > 10:
+		elif self.boomCounter > 20:
 			return True
 		else:
 			return False

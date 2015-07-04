@@ -74,13 +74,16 @@ class Warrior(GameElement):
 
 		for stone in stoneList:
 			if stone.rect.colliderect(self.rect):
-				self.rect[0] = old_x
-				self.rect[1] = old_y
 
-				# fix the "trap inside a stone"
-				while stone.rect.colliderect(self.rect):
-					self.rect[0] = self.rect[0] - 2
-					self.rect[1] = self.rect[1] - 2
+				if not stone.broken:
+
+					self.rect[0] = old_x
+					self.rect[1] = old_y
+
+					# fix the "trap inside a stone"
+					while stone.rect.colliderect(self.rect):
+						self.rect[0] = self.rect[0] - 2
+						self.rect[1] = self.rect[1] - 2
 
 		self.x = self.rect[0]
 		self.y = self.rect[1]
