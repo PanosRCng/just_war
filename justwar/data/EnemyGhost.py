@@ -1,7 +1,7 @@
 import pygame
 from justwar.data.Config import Config
 from justwar.data.Warrior import Warrior
-from justwar.data.Fire import Fire
+from justwar.data.Fire import FireGen
 from random import randint
 from math import sqrt
 from math import copysign
@@ -21,6 +21,8 @@ class EnemyGhost(Warrior):
 		
 		# 1 for aggressive / 0 for defensive
 		self.personality = randint(0,1)
+
+		self.FireGen = FireGen("fire_blue",  self.firespeed)
 
 
 	def Move(self, time):
@@ -60,13 +62,11 @@ class EnemyGhost(Warrior):
 			self.speed_y = -self.speed_y
 
 
-	def Fire(self):	
+	def Fire(self):
+		
+		self.fireForce = self.fireForce - 100
 
-		self.fireForce = self.fireForce - 10
-
-		shot = Fire("fire_blue", self.rect, self.firespeed, self.pointer.direction)
-
-		return shot
+		return self.FireGen.Shot(self.rect, self.pointer.direction)
 
 
 	def checkArea(self, warrior_x, warrior_y):

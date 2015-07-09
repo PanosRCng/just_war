@@ -5,27 +5,42 @@ from math import copysign
 from justwar.data.Room import stoneList
 
 
-class Fire(GameElement):
+class FireGen(GameElement):
 
-
-	def __init__(self, imagefile, warrior_rect, speed, direction):
+	def __init__(self, imagefile, speed):
 
 		GameElement.__init__(self)
 
-		self.direction = direction
-		self.speed = speed
 		self.imagefile = imagefile
-		self.moveCounter = 0
-		self.boomCounter = 0
+		self.speed = speed
 
 		# initially load all shapes -- fewer disk I/O during the game
-		self.shapes = { 2 : self.load_image(self.imagefile + '.png') }
-	        self.boomShape = self.load_image(self.imagefile + "_boom.png")
+		self.shapes = { 
+				2 : self.load_image(self.imagefile + '.png'), 
+				'boom' : self.load_image(self.imagefile + "_boom.png")
+			      }
 
 		# rotate what can be rotated -- fewer disk I/O
 		self.shapes[4] =  pygame.transform.rotate(self.shapes[2], -90)
 		self.shapes[1] =  pygame.transform.rotate(self.shapes[2], 180)
 		self.shapes[3] =  pygame.transform.rotate(self.shapes[2], 90)
+
+
+	def Shot(self, warrior_rect, direction):
+
+		return FireShot(self.shapes, self.speed, warrior_rect, direction)
+
+
+
+class FireShot():
+
+	def __init__(self, shapes, speed, warrior_rect, direction):
+
+		self.shapes = shapes
+		self.speed = speed
+		self.direction = direction
+		self.moveCounter = 0
+		self.boomCounter = 0
 
 		self.__Shaping( self.shapes[direction], (warrior_rect.centerx, warrior_rect.centery) )
 
@@ -76,7 +91,7 @@ class Fire(GameElement):
 		self.boomCounter = 1
 		self.speed = (copysign(1,self.speed)) * 100
 
-		self.__Shaping( self.boomShape, (self.GetXY()) )
+		self.__Shaping( self.shapes['boom'], (self.GetXY()) )
 
 
 	def __Shaping(self, new_shape, coord):

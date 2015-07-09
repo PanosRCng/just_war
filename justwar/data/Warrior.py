@@ -2,7 +2,7 @@ import pygame
 from justwar.data.Config import Config
 from justwar.data.GameElement import GameElement
 from justwar.data.Pointer import Pointer
-from justwar.data.Fire import Fire
+#from justwar.data.Fire import Fire
 from math import copysign
 from justwar.data.Room import stoneList
 
