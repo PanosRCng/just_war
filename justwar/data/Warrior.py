@@ -14,6 +14,8 @@ class Warrior(GameElement):
 
 		GameElement.__init__(self)
 
+		self.sizeType = sizeType
+
 		ratio = self.ratio_map[sizeType]
 
 		# initially load all shapes -- fewer disk I/O during the game

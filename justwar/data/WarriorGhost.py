@@ -12,7 +12,7 @@ class WarriorGhost(Warrior):
 
 		self.throughGate = -1
 
-		self.FireGen = FireGen("fire_red",  self.firespeed)
+		self.FireGen = FireGen("fire_red",  self.firespeed, self.sizeType)
 
 
 	def Move(self, time):

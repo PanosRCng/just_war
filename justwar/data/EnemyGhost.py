@@ -22,7 +22,7 @@ class EnemyGhost(Warrior):
 		# 1 for aggressive / 0 for defensive
 		self.personality = randint(0,1)
 
-		self.FireGen = FireGen("fire_blue",  self.firespeed)
+		self.FireGen = FireGen("fire_blue",  self.firespeed, self.sizeType)
 
 
 	def Move(self, time):

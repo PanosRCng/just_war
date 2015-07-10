@@ -7,7 +7,9 @@ from justwar.data.Room import stoneList
 
 class FireGen(GameElement):
 
-	def __init__(self, imagefile, speed):
+	ratio_map = [ 0.4, 0.5, 0.55, 0.6, 0.7, 0.75, 0.8, 0.9, 1.0, 1.1, 1.2 ]
+
+	def __init__(self, imagefile, speed, sizeType):
 
 		GameElement.__init__(self)
 
@@ -16,8 +18,8 @@ class FireGen(GameElement):
 
 		# initially load all shapes -- fewer disk I/O during the game
 		self.shapes = { 
-				2 : self.load_image(self.imagefile + '.png'), 
-				'boom' : self.load_image(self.imagefile + "_boom.png")
+				2 : self.load_image_scaled(self.imagefile + '.png', self.ratio_map[sizeType]), 
+				'boom' : self.load_image_scaled(self.imagefile + "_boom.png", self.ratio_map[sizeType])
 			      }
 
 		# rotate what can be rotated -- fewer disk I/O
