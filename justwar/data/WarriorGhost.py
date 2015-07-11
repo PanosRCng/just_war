@@ -6,7 +6,6 @@ from justwar.data.Room import gates
 
 class WarriorGhost(Warrior):
 
-
 	def __init__(self):
 		super(WarriorGhost, self).__init__("warrior1", (Config.screenWidth/4,Config.screenHeight/2), 8)
 

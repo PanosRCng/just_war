@@ -8,10 +8,14 @@ from justwar.data.Config import Config
 from justwar.data.Maze import Maze
 from justwar.data.Room import Room 
 from justwar.data.Room import gates
-from justwar.data.HealthBar import HealthBar
+from justwar.data.Bar import HealthBar
+from justwar.data.Bar import ForceBar
 from justwar.data.Warrior import Warrior
 from justwar.data.EnemyGhost import EnemyGhost
 from justwar.data.WarriorGhost import WarriorGhost
+from justwar.data.Drop import HealthDrop
+from justwar.data.Drop import ForceDrop
+from justwar.data.Room import stoneList
 
 # put this in if android
 from justwar.data.MoveKeyPad import MoveKeyPad
@@ -60,6 +64,7 @@ def main():
 	WarriorGhost1 = WarriorGhost()
 
 	HealthBar1 = HealthBar(10, 10)
+	ForceBar1 = ForceBar(10, 27)
 
 	clock = pygame.time.Clock()
 
@@ -68,6 +73,8 @@ def main():
 	enemies = []
 
 	enemyFirelist = []
+
+	drops = []
 
 	if android:
 		touchedKeys = []
@@ -168,6 +175,7 @@ def main():
 			firelist[:] = []
 			enemies[:] = []
 			enemyFirelist[:] = []
+			drops[:] = []
 
 			if WarriorGhost1.throughGate == 0:
 					WarriorGhost1.x = gates[2].rect[0]
@@ -192,8 +200,11 @@ def main():
 			MoveKeyPad1.Show(screen)
 			PowerKeyPad1.Show(screen)
 
-		HealthBar1.health_value = WarriorGhost1.life
+		HealthBar1.value = WarriorGhost1.life
 		HealthBar1.Show(screen)
+
+		ForceBar1.value = WarriorGhost1.life
+		ForceBar1.Show(screen)
 
 		WarriorGhost1.Show(screen)
 
@@ -213,6 +224,20 @@ def main():
 				elif enemy.personality == 0:
 					enemy.shieldForce = 100
 
+		for stone in stoneList:
+			if (stone.broken) and not (stone.wastedDrop):
+				drops.append( ForceDrop( stone.GetXY() ) )
+				stone.wastedDrop = True
+
+		for drop in drops:
+
+			drop.Show(screen)
+
+			if WarriorGhost1.rect.collidepoint( drop.GetXY() ):
+
+				WarriorGhost1.life = 200
+				drops.remove(drop)
+
 
 		# fast moving objects -- collisions
 
@@ -230,6 +255,7 @@ def main():
 							enemy.life -= 10
 
 						if enemy.life < 0:
+							drops.append( HealthDrop( (enemy.x, enemy.y) ) )
 							enemies.remove(enemy)
 
 		for shot in enemyFirelist:

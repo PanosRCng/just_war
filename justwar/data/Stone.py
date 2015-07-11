@@ -1,6 +1,7 @@
 import pygame
 from justwar.data.Config import Config
 from justwar.data.GameElement import GameElement
+from justwar.data.Drop import ForceDrop
 from random import randint
 
 class Stone(GameElement):
@@ -21,6 +22,7 @@ class Stone(GameElement):
 
 		self.hits = 0
 		self.broken = False
+		self.wastedDrop = False
 
 		self.__Shaping(self.shape)
 
@@ -38,6 +40,10 @@ class Stone(GameElement):
 			self.broken = True	
 		elif self.hits > 50:
 			self.__Shaping(self.shape_hit)	
+
+
+	def GetXY(self):
+		return (self.rect.centerx, self.rect.centery)
 
 
 	def __Shaping(self, new_shape):
