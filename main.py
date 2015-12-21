@@ -178,17 +178,17 @@ def main():
 			drops[:] = []
 
 			if WarriorGhost1.throughGate == 0:
-					WarriorGhost1.x = gates[2].rect[0]
+					WarriorGhost1.x = gates[2].rect[0]+WarriorGhost1.width
 					WarriorGhost1.y = gates[2].rect[1]-WarriorGhost1.height-10
 			elif WarriorGhost1.throughGate == 1:
 					WarriorGhost1.x = gates[3].rect[0]+gates[3].rect[2] + 10
-					WarriorGhost1.y = gates[3].rect[1]
+					WarriorGhost1.y = gates[3].rect[1]+WarriorGhost1.height
 			elif WarriorGhost1.throughGate == 2:
-					WarriorGhost1.x = gates[0].rect[0]
+					WarriorGhost1.x = gates[0].rect[0]+WarriorGhost1.width
 					WarriorGhost1.y = gates[0].rect[1]+WarriorGhost1.height+10
 			elif WarriorGhost1.throughGate == 3:
 					WarriorGhost1.x = gates[1].rect[0]-WarriorGhost1.width-10
-					WarriorGhost1.y = gates[1].rect[1]
+					WarriorGhost1.y = gates[1].rect[1]+WarriorGhost1.height
 
 			WarriorGhost1.throughGate = -1
 

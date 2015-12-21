@@ -14,6 +14,7 @@ class Warrior(GameElement):
 
 		GameElement.__init__(self)
 
+		# feature 1
 		self.sizeType = sizeType
 
 		ratio = self.ratio_map[sizeType]
@@ -31,13 +32,17 @@ class Warrior(GameElement):
 		self.shapes[1] = pygame.transform.flip(self.shapes[2], True, False)
 		self.shapes[5] = pygame.transform.flip(self.shapes[6], True, False)
 
-		self.x = 0
-		self.y = 0
+		# feature 2
 		self.firespeed = 800
+		# feature 3
 		self.fireForce = 100
+		# feature 4
 		self.shieldForce = 0
+		# feature 5
 		self.life = 200
 
+		self.x = 0
+		self.y = 0
 		self.speed_x = 0
 		self.speed_y = 0
 

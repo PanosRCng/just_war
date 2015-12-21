@@ -12,19 +12,19 @@ class Gate(GameElement):
 		self.direction = direction
 
 		self.shape = self.load_image("gate.png")
-		self.coord = ( randint(Config.screenWidth-700, Config.screenWidth-300), 0 ) 
+		self.coord = ( Config.screenWidth-600, 0 ) 
 
 		if direction == 1:
 			self.shape = pygame.transform.rotate(self.shape, -90)
-			self.coord = ( Config.screenWidth-self.shape.get_width()-10, randint(Config.screenHeight-440, Config.screenHeight-300) )
+			self.coord = ( Config.screenWidth-self.shape.get_width()-10, Config.screenHeight-370 )
 
 		if direction == 2:
 			self.shape = pygame.transform.rotate(self.shape, -180)
-			self.coord = ( randint(Config.screenWidth-700, Config.screenWidth-300), Config.screenHeight-self.shape.get_height() )
+			self.coord = ( Config.screenWidth-600, Config.screenHeight-self.shape.get_height() )
 
 		if direction == 3:
 			self.shape = pygame.transform.rotate(self.shape, 90)
-			self.coord = ( 0+10, randint(Config.screenHeight-440, Config.screenHeight-300) )
+			self.coord = ( 0+10, Config.screenHeight-370 )
 
 		self.width = self.shape.get_width()
 		self.height = self.shape.get_height()
